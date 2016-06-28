@@ -19,13 +19,15 @@ import sirius.kernel.di.std.Register;
 @Register(classes = PersistenceHandler.class)
 public class PersistenceHandler {
 
+    //TODO http://stackoverflow.com/questions/14888040/java-an-entitymanager-object-in-a-multithread-environment
     private EntityManagerFactory entityManagerFactory = null;
 
     private static Logger log = LogManager.getLogger(PersistenceHandler.class);
 
+    private EntityManager manager = null;
+            
     public synchronized EntityManager getEntityManager() {
 
-        EntityManager manager = null;
         log.info("entityManagerFactory is null? " + (null == entityManagerFactory));
 
         if (null == entityManagerFactory) {
@@ -35,7 +37,9 @@ public class PersistenceHandler {
             entityManagerFactory = Persistence.createEntityManagerFactory("OmegaPU");
         }
         try {
-            manager = entityManagerFactory.createEntityManager();
+            if (null == manager || !manager.isOpen()) {
+                manager = entityManagerFactory.createEntityManager();
+            } 
         } catch (IllegalStateException e) {
             throw new IllegalStateException(e);
         }
