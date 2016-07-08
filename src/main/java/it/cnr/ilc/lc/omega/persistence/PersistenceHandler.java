@@ -8,6 +8,8 @@ package it.cnr.ilc.lc.omega.persistence;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sirius.kernel.di.std.Register;
@@ -21,14 +23,20 @@ public class PersistenceHandler {
 
     //TODO http://stackoverflow.com/questions/14888040/java-an-entitymanager-object-in-a-multithread-environment
     private EntityManagerFactory entityManagerFactory = null;
+    private ThreadLocal<EntityManager> threadLocal = null;
 
     private static Logger log = LogManager.getLogger(PersistenceHandler.class);
 
-    private EntityManager manager = null;
-            
     public synchronized EntityManager getEntityManager() {
 
-        log.info("entityManagerFactory is null? " + (null == entityManagerFactory));
+        if (null == threadLocal) {
+            threadLocal = new ThreadLocal<>();
+        }
+
+        EntityManager em = threadLocal.get();
+
+        log.info(
+                "entityManagerFactory is null? " + (null == entityManagerFactory));
 
         if (null == entityManagerFactory) {
             entityManagerFactory = Persistence.createEntityManagerFactory("OmegaPU");
@@ -36,14 +44,17 @@ public class PersistenceHandler {
         } else if (!entityManagerFactory.isOpen()) {
             entityManagerFactory = Persistence.createEntityManagerFactory("OmegaPU");
         }
+
         try {
-            if (null == manager || !manager.isOpen()) {
-                manager = entityManagerFactory.createEntityManager();
-            } 
+
+            if (null == em || !em.isOpen()) {
+                em = entityManagerFactory.createEntityManager();
+                threadLocal.set(em);
+            }
         } catch (IllegalStateException e) {
             throw new IllegalStateException(e);
         }
-        return manager;
+        return em;
 
     }
 
