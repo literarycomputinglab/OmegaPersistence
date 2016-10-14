@@ -35,8 +35,7 @@ public class PersistenceHandler {
 
         EntityManager em = threadLocal.get();
 
-        log.info(
-                "entityManagerFactory is null? " + (null == entityManagerFactory));
+        log.info("entityManagerFactory is null? " + (null == entityManagerFactory));
 
         if (null == entityManagerFactory) {
             entityManagerFactory = Persistence.createEntityManagerFactory("OmegaPU");
@@ -51,7 +50,8 @@ public class PersistenceHandler {
                 em = entityManagerFactory.createEntityManager();
                 threadLocal.set(em);
             }
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
+            log.error("In PersistenceHandler",e);
             throw new IllegalStateException(e);
         }
         return em;
