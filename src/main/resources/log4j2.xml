@@ -11,5 +11,6 @@
         </Root>
         <Logger name="org.hibernate" level="debug"/>
         <Logger name="org.hibernate.SQL" level="debug"/>
+        <!--        <Logger name="com.fasterxml.jackson" level="debug">-->
     </Loggers>
 </Configuration>

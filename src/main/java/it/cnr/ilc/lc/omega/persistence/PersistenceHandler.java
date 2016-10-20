@@ -51,7 +51,7 @@ public class PersistenceHandler {
                 threadLocal.set(em);
             }
         } catch (Exception e) {
-            log.error("In PersistenceHandler",e);
+            log.error("In PersistenceHandler", e);
             throw new IllegalStateException(e);
         }
         return em;
@@ -59,19 +59,22 @@ public class PersistenceHandler {
     }
 
     public synchronized void close() {
+        log.info("Closing Entity Manager Factory...");
 
         try {
             if (null != entityManagerFactory) {
-                entityManagerFactory.close();
-                log.info("entityManagerFactory.close()");
+                if (entityManagerFactory.isOpen()) {
+                    entityManagerFactory.close();
+                }
+                log.info("on close(): entityManagerFactory.close(), entityManagerFactory is [" + entityManagerFactory + "]");
             } else {
-                log.warn("entityManagerFactory is null!");
+                log.warn("on close(): entityManagerFactory is null!");
             }
         } catch (IllegalStateException e) {
-            log.error("On close entityManagerFactory: " + e.getMessage());
+            log.error("On close() entityManagerFactory: " + e.getMessage());
         }
 
-        log.info("entityManagerFactory closed");
+        log.info("on close(): entityManagerFactory closed");
     }
 
 }
