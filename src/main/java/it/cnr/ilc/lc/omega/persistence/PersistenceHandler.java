@@ -10,8 +10,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import sirius.kernel.di.std.Register;
 
 /**
@@ -27,11 +27,25 @@ public class PersistenceHandler {
 
     private static Logger log = LogManager.getLogger(PersistenceHandler.class);
 
+    {
+        log.info("entityManagerFactory init()");
+        try {
+            entityManagerFactory = Persistence.createEntityManagerFactory("OmegaPU");
+
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        log.info("entityManagerFactory " + entityManagerFactory);
+
+    }
+
     public synchronized EntityManager getEntityManager() {
 
+        log.info("threadLocal is " + threadLocal);
         if (null == threadLocal) {
             threadLocal = new ThreadLocal<>();
         }
+        log.info("Tring to get the entityt manager...");
 
         EntityManager em = threadLocal.get();
 
