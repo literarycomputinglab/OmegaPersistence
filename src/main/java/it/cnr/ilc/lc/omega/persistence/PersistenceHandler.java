@@ -33,7 +33,7 @@ public class PersistenceHandler {
             entityManagerFactory = Persistence.createEntityManagerFactory("OmegaPU");
 
         } catch (Exception e) {
-            System.err.println(e);
+            log.error(e);
         }
         log.info("entityManagerFactory " + entityManagerFactory);
 
